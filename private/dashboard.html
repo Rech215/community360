@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COMMUNITY 360 · Panel</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-marca"><span class="logo">C360</span> COMMUNITY 360</div>
+    <div class="barra-usuario">
+      <span id="quien">...</span>
+      <button id="salir" type="button">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="contenido">
+    <section class="panel">
+      <h2>Sesión activa</h2>
+      <p>Esta página solo se abre con una sesión iniciada. La información de abajo la devolvió el endpoint protegido <code>GET /api/auth/me</code>.</p>
+      <pre id="respuesta">Consultando...</pre>
+    </section>
+    <section class="panel">
+      <h2>Panel analítico</h2>
+      <p>Las métricas históricas y en tiempo real se agregan en las siguientes fases.</p>
+    </section>
+  </main>
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+:root { --acento: #2f5fa7; --fondo: #eef1f5; --texto: #1c2430; --suave: #5d6978; --borde: #cfd6df; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fondo); color: var(--texto); }
+.barra {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: .75rem 1.25rem; background: #1f2a3a; color: #fff;
+}
+.barra-marca { display: flex; align-items: center; gap: .6rem; font-weight: 700; }
+.logo {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  border-radius: 9px; background: var(--acento); font-size: .8rem;
+}
+.barra-usuario { display: flex; align-items: center; gap: .9rem; font-size: .9rem; }
+button {
+  border: 1px solid rgba(255, 255, 255, .45); background: transparent; color: #fff;
+  padding: .45rem .9rem; border-radius: 8px; cursor: pointer; font-size: .9rem;
+}
+button:hover { background: rgba(255, 255, 255, .12); }
+.contenido { max-width: 960px; margin: 1.5rem auto; padding: 0 1rem; display: grid; gap: 1rem; }
+.panel { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 1.25rem 1.5rem; }
+.panel h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
+.panel p { color: var(--suave); line-height: 1.5; }
+pre { background: #f5f7fa; border: 1px solid var(--borde); border-radius: 8px; padding: .8rem; overflow-x: auto; margin: 0; }
+code { background: #e9edf3; padding: .1rem .35rem; border-radius: 4px; }

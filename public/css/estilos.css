@@ -1,0 +1,55 @@
+:root {
+  --fondo: #eef1f5;
+  --acento: #2f5fa7;
+  --acento-oscuro: #254d8a;
+  --texto: #1c2430;
+  --suave: #5d6978;
+  --error: #b3261e;
+  --borde: #cfd6df;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--texto);
+}
+.pagina-login {
+  display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+  background: var(--fondo);
+}
+.tarjeta {
+  width: 100%; max-width: 400px; background: #fff; border-radius: 12px; border: 1px solid var(--borde);
+  padding: 2rem 2rem 1.5rem; box-shadow: 0 4px 16px rgba(28, 36, 48, .08);
+}
+.marca { text-align: center; margin-bottom: 1.5rem; }
+.logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; border-radius: 10px; background: var(--acento); color: #fff;
+  font-weight: 700; letter-spacing: .5px;
+}
+.marca h1 { margin: .75rem 0 .15rem; font-size: 1.4rem; }
+.marca p { margin: 0; color: var(--suave); font-size: .92rem; }
+label { display: block; margin: 1rem 0 .35rem; font-size: .88rem; font-weight: 600; }
+input {
+  width: 100%; padding: .7rem .8rem; border: 1px solid var(--borde); border-radius: 10px;
+  font-size: 1rem; background: #fff; color: var(--texto);
+}
+input:focus { outline: 2px solid var(--acento); outline-offset: 1px; border-color: var(--acento); }
+.campo-clave { position: relative; }
+.campo-clave input { padding-right: 4rem; }
+.ver {
+  position: absolute; right: .35rem; top: 50%; transform: translateY(-50%);
+  border: 0; background: transparent; color: var(--acento-oscuro); font-weight: 600;
+  cursor: pointer; padding: .4rem .6rem; width: auto; margin: 0;
+}
+.mensaje { min-height: 1.3rem; margin: .9rem 0 .4rem; color: var(--error); font-size: .9rem; }
+.mensaje.info { color: var(--suave); }
+#entrar {
+  width: 100%; padding: .8rem; border: 0; border-radius: 10px; background: var(--acento);
+  color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+}
+#entrar:hover:not(:disabled) { background: var(--acento-oscuro); }
+#entrar:disabled { opacity: .65; cursor: wait; }
+.pie { text-align: center; color: var(--suave); font-size: .8rem; margin: 1.2rem 0 0; }
+@media (max-width: 420px) { .tarjeta { padding: 1.5rem 1.25rem 1.25rem; } }
