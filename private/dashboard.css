@@ -132,7 +132,6 @@ button { font: inherit; }
   .contenido { padding: 1.5rem 1rem 3rem; }
   .portada h1 { font-size: 1.5rem; }
   .vivo-lista li { grid-template-columns: 62px 1fr auto; }
-  .vivo-lista .tipo { display: none; }
 }
 @media (max-width: 480px) { .cinta { grid-template-columns: 1fr; } .cinta article { border-left: 0 !important; } .cinta article + article { border-top: 1px solid var(--borde); } }
 
@@ -240,3 +239,21 @@ body { background: #f3efe7; }
 .tarjeta h3 .estado { float: right; margin-left: 0; }
 .banda { padding-bottom: 4.6rem; }
 .tarjeta h3 .estado { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: .78rem; }
+
+/* En vivo: estado de conexión y movimientos */
+.estado.ok i { background: #2e9e5b; box-shadow: 0 0 0 3px rgba(46,158,91,.18); }
+.vacio { color: var(--suave); font-size: .9rem; margin: .4rem 0 0 1.05rem; }
+.vivo-lista li.nuevo { animation: entra 2.4s ease-out; }
+@keyframes entra { from { background: #e3f0e6; transform: translateY(-6px); opacity: .4; } to { background: transparent; transform: none; opacity: 1; } }
+.vivo-lista .etiqueta-creada { border-color: #2e9e5b; color: #1f6f40; }
+.vivo-lista .etiqueta-modificada { border-color: #c98a14; color: #8a5e0a; }
+.vivo-lista .etiqueta-eliminada { border-color: #c4572f; color: #9a3a18; }
+.vivo-lista li.accion-eliminada .quien-vivo { text-decoration: line-through; color: var(--suave); }
+@media (prefers-reduced-motion: reduce) { .vivo-lista li.nuevo { animation: none; } }
+
+/* Con poco ancho la etiqueta de acción baja a una segunda línea en lugar de ocultarse */
+@media (max-width: 1000px) {
+  .vivo-lista li { grid-template-columns: 62px 1fr auto; row-gap: .3rem; }
+  .vivo-lista .sent { grid-column: 3; grid-row: 1; }
+  .vivo-lista .tipo { grid-column: 2 / 4; grid-row: 2; justify-self: start; }
+}

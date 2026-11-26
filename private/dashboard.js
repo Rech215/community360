@@ -59,19 +59,58 @@ D.riesgo.slice(0, 6).forEach(u => {
   cuerpoRiesgo.appendChild(tr);
 });
 
-// ---- En vivo (ejemplo) ----
+// ---- En vivo (WebSockets) ----
 const vivo = $('vivo');
-D.vivo.forEach(v => {
+const MAX_VIVO = 12;
+const TIPOS = { mensaje: 'Mensaje', comentario: 'Comentario', reaccion: 'Reacción', respuesta_encuesta: 'Respuesta de encuesta', rsvp_evento: 'RSVP a evento' };
+const ACCIONES = { creada: 'Nueva', modificada: 'Modificada', eliminada: 'Eliminada' };
+
+function ponerEstado(clase, texto) {
+  const e = $('estado-ws');
+  e.className = 'estado ' + clase;
+  e.lastElementChild.textContent = texto;
+}
+
+function agregarMovimiento(msg) {
+  const i = msg.interaccion || {};
+  const hora = new Date(msg.hora).toLocaleTimeString('es-MX', { hour12: false });
   const li = document.createElement('li');
-  li.appendChild(G.el('span', { class: 'hora' }, v.hora));
-  const q = G.el('span', { class: 'quien-vivo' }, v.alias); q.appendChild(G.el('small', {}, v.plataforma));
+  li.className = 'accion-' + msg.accion;
+  li.appendChild(G.el('span', { class: 'hora' }, hora));
+  const q = G.el('span', { class: 'quien-vivo' }, (i.id_usuario || '—') + ' · ' + (i.id_interaccion || ''));
+  if (i.plataforma) q.appendChild(G.el('small', {}, i.plataforma));
   li.appendChild(q);
-  li.appendChild(G.el('span', { class: 'tipo' }, v.tipo));
-  const clase = v.sentimiento > 0.15 ? 'pos' : v.sentimiento < -0.15 ? 'neg' : 'neu';
-  const flecha = clase === 'pos' ? '▲ ' : clase === 'neg' ? '▼ ' : '● ';
-  li.appendChild(G.el('span', { class: 'sent ' + clase }, flecha + (v.sentimiento > 0 ? '+' : '') + v.sentimiento.toFixed(2)));
-  vivo.appendChild(li);
-});
+  li.appendChild(G.el('span', { class: 'tipo etiqueta-' + msg.accion }, ACCIONES[msg.accion] + (i.tipo ? ' · ' + (TIPOS[i.tipo] || i.tipo) : '')));
+  if (typeof i.sentimiento === 'number') {
+    const clase = i.sentimiento > 0.15 ? 'pos' : i.sentimiento < -0.15 ? 'neg' : 'neu';
+    const flecha = clase === 'pos' ? '▲ ' : clase === 'neg' ? '▼ ' : '● ';
+    li.appendChild(G.el('span', { class: 'sent ' + clase }, flecha + (i.sentimiento > 0 ? '+' : '') + i.sentimiento.toFixed(2)));
+  } else {
+    li.appendChild(G.el('span', { class: 'sent neu' }, '—'));
+  }
+  $('vivo-vacio').hidden = true;
+  vivo.prepend(li);
+  while (vivo.children.length > MAX_VIVO) vivo.lastElementChild.remove();
+  li.classList.add('nuevo');
+  setTimeout(() => li.classList.remove('nuevo'), 2500);
+}
+
+if (window.io) {
+  const socket = io({ transports: ['websocket', 'polling'] });
+  socket.on('connect', () => ponerEstado('ok', 'Conectado en vivo'));
+  socket.on('disconnect', () => ponerEstado('', 'Reconectando…'));
+  socket.on('connect_error', err => {
+    if (err && err.message === 'No autenticado') { window.location.href = '/login'; return; }
+    ponerEstado('', 'Sin conexión');
+  });
+  socket.on('interaccion', msg => {
+    agregarMovimiento(msg);
+    // La Fase 6 escucha este aviso para volver a pedir las métricas a la API
+    document.dispatchEvent(new CustomEvent('c360:cambio', { detail: msg }));
+  });
+} else {
+  ponerEstado('', 'Sin conexión');
+}
 
 // ---- Sesión ----
 async function cargarSesion() {

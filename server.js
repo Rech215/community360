@@ -1,4 +1,4 @@
-// COMMUNITY 360 - Servidor (Express). Fase 3: autenticación y rutas protegidas.
+// COMMUNITY 360 - Servidor (Express + Socket.IO). Auth (Fase 3), API REST (Fase 4), tiempo real (Fase 5).
 require('dotenv').config();
 const path = require('path');
 const http = require('http');
@@ -62,6 +62,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error del servidor' });
 });
 
-const servidor = http.createServer(app);   // se reutiliza para los WebSockets (Fase 5)
+const servidor = http.createServer(app);   // Express y los WebSockets comparten el mismo puerto
+require('./lib/tiempo-real').iniciar(servidor, { verificar, eventos: require('./lib/eventos') });
 const PUERTO = process.env.PORT || 3000;
 servidor.listen(PUERTO, () => console.log(`COMMUNITY 360 escuchando en http://localhost:${PUERTO}`));

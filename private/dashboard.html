@@ -71,12 +71,14 @@
 
     <section class="panel" id="v-vivo" hidden>
       <article class="tarjeta">
-        <h3>Lo que está pasando ahora <span class="estado"><i></i>Sin conexión (ejemplo)</span></h3><p class="sub">Cada vez que alguien participa aparece aquí al instante.</p>
+        <h3>Lo que está pasando ahora <span class="estado" id="estado-ws"><i></i><span>Conectando…</span></span></h3><p class="sub">Cada interacción nueva, modificada o eliminada aparece aquí al instante.</p>
+        <p class="vacio" id="vivo-vacio">Esperando movimientos…</p>
         <ul class="vivo-lista" id="vivo"></ul>
       </article>
     </section>
   </main>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script src="datos-ejemplo.js"></script>
   <script src="graficas.js"></script>
   <script src="dashboard.js"></script>
