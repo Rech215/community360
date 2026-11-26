@@ -1,0 +1,360 @@
+{
+  "info": {
+    "name": "COMMUNITY 360 - API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://community360-txja.onrender.com"
+    },
+    {
+      "key": "usuario",
+      "value": "hemir.pech"
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "id_nueva",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuario\": \"{{usuario}}\",\n  \"password\": \"{{password}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r = pm.response.json();",
+              "if (r.token) pm.collectionVariables.set('token', r.token);",
+              "pm.test('Login correcto (200)', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Sesión actual (me)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/auth/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Catálogos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/catalogos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "catalogos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Usuarios (primeros 5)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/usuarios?limit=5",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "usuarios"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Interacciones (últimas 5)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones?limit=5",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. Interacciones filtradas por tipo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones?tipo=mensaje&limit=5",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones"
+          ],
+          "query": [
+            {
+              "key": "tipo",
+              "value": "mensaje"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. POST crear interacción",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_usuario\": \"U000001\",\n  \"fecha_hora\": \"2026-11-25T14:30:00\",\n  \"id_plataforma\": 1,\n  \"tipo\": \"comentario\",\n  \"texto\": \"Prueba desde Postman\",\n  \"id_tema\": 1,\n  \"sentimiento\": 0.6,\n  \"dispositivo\": \"Web\",\n  \"reacciones_recibidas\": 0,\n  \"etiquetas\": [\n    1\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r = pm.response.json();",
+              "if (r.id_interaccion) pm.collectionVariables.set('id_nueva', r.id_interaccion);",
+              "pm.test('Creada (201)', () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. GET la interacción creada",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones/{{id_nueva}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones",
+            "{{id_nueva}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "9. PUT modificar interacción",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones/{{id_nueva}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones",
+            "{{id_nueva}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sentimiento\": -0.5,\n  \"texto\": \"Texto modificado desde Postman\"\n}"
+        }
+      }
+    },
+    {
+      "name": "10. DELETE eliminar interacción",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones/{{id_nueva}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones",
+            "{{id_nueva}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "11. Error 400 - sentimiento fuera de rango",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_usuario\": \"U000001\",\n  \"fecha_hora\": \"2026-11-25T14:30:00\",\n  \"id_plataforma\": 1,\n  \"tipo\": \"comentario\",\n  \"texto\": \"x\",\n  \"id_tema\": 1,\n  \"sentimiento\": 5,\n  \"dispositivo\": \"Web\"\n}"
+        }
+      }
+    },
+    {
+      "name": "12. Error 422 - usuario inexistente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_usuario\": \"U999999\",\n  \"fecha_hora\": \"2026-11-25T14:30:00\",\n  \"id_plataforma\": 1,\n  \"tipo\": \"comentario\",\n  \"texto\": \"x\",\n  \"id_tema\": 1,\n  \"sentimiento\": 0.1,\n  \"dispositivo\": \"Web\"\n}"
+        }
+      }
+    },
+    {
+      "name": "13. Error 404 - interacción inexistente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/interacciones/I9999999",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "interacciones",
+            "I9999999"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -5,6 +5,7 @@ const http = require('http');
 const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 const { verificar, requiereAuthPagina } = require('./lib/auth');
 
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
@@ -34,7 +35,15 @@ app.use(cookieParser());
 
 // ---- API ----
 app.get('/api/health', (req, res) => res.json({ ok: true, hora: new Date().toISOString() }));
+app.use('/api', rateLimit({            // tope general por IP para toda la API
+  windowMs: 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas peticiones, intenta de nuevo en un minuto' },
+}));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api', require('./routes/interacciones'));   // Fase 4 (exige sesión en todas sus rutas)
 app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 
 // ---- Páginas ----

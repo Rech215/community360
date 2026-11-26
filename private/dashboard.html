@@ -3,29 +3,82 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>COMMUNITY 360 · Panel</title>
+  <title>Community 360 · Panel</title>
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-  <header class="barra">
-    <div class="barra-marca"><span class="logo">C360</span> COMMUNITY 360</div>
-    <div class="barra-usuario">
-      <span id="quien">...</span>
-      <button id="salir" type="button">Cerrar sesión</button>
+  <div class="banda">
+  <header class="superior">
+    <div class="marca">Community<b>360</b></div>
+    <nav class="menu" role="tablist" aria-label="Vistas">
+      <button type="button" role="tab" data-vista="actividad" aria-selected="true">Actividad</button>
+      <button type="button" role="tab" data-vista="comunidad" aria-selected="false">Comunidad</button>
+      <button type="button" role="tab" data-vista="bienestar" aria-selected="false">Ánimo y riesgo</button>
+      <button type="button" role="tab" data-vista="vivo" aria-selected="false">En vivo</button>
+    </nav>
+    <div class="cuenta">
+      <span class="chip-ejemplo">Datos de ejemplo</span>
+      <span class="quien"><strong id="quien">...</strong><small id="rol"></small></span>
+      <button id="salir" type="button">Salir</button>
     </div>
   </header>
+    <div class="banda-int">
+    <section class="cinta" aria-label="Indicadores">
+      <article id="ind-interacciones"><span class="etiqueta">Actividad del mes</span><strong class="valor"></strong><span class="delta"></span><div class="mini-caja"></div></article>
+      <article id="ind-usuarios"><span class="etiqueta">Personas activas</span><strong class="valor"></strong><span class="delta"></span><div class="mini-caja"></div></article>
+      <article id="ind-sentimiento"><span class="etiqueta">Ánimo general</span><strong class="valor"></strong><span class="delta"></span><div class="mini-caja"></div></article>
+      <article id="ind-riesgo"><span class="etiqueta">Podrían irse</span><strong class="valor"></strong><span class="delta"></span><div class="mini-caja"></div></article>
+    </section>
+    </div>
+  </div>
 
   <main class="contenido">
-    <section class="panel">
-      <h2>Sesión activa</h2>
-      <p>Esta página solo se abre con una sesión iniciada. La información de abajo la devolvió el endpoint protegido <code>GET /api/auth/me</code>.</p>
-      <pre id="respuesta">Consultando...</pre>
+    <section class="panel" id="v-actividad">
+      <div class="rejilla-vista">
+        <article class="tarjeta c2" data-grafica="tendencia"><h3>Actividad de cada día</h3><p class="sub">Mensajes, comentarios y reacciones de los últimos 30 días.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="tipos"><h3>¿Cómo participa la gente?</h3><p class="sub">Qué tipo de actividad es la más común.</p><div class="grafica"></div></article>
+        <article class="tarjeta c2" data-grafica="calor"><h3>¿Cuándo hay más movimiento?</h3><p class="sub">Más oscuro = más actividad. Sirve para elegir cuándo publicar o hacer eventos.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="plataformas"><h3>¿Dónde se juntan?</h3><p class="sub">Plataformas con más actividad.</p><div class="grafica"></div></article>
+      </div>
     </section>
-    <section class="panel">
-      <h2>Panel analítico</h2>
-      <p>Las métricas históricas y en tiempo real se agregan en las siguientes fases.</p>
+
+    <section class="panel" id="v-comunidad" hidden>
+      <div class="rejilla-vista">
+        <article class="tarjeta" data-grafica="especies"><h3>Especies de fursona</h3><p class="sub">Cuántas personas eligieron cada una.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="intereses"><h3>Intereses</h3><p class="sub">Lo que más les gusta a los miembros.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="edades"><h3>Edades</h3><p class="sub">Qué porcentaje hay en cada rango.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="eventos"><h3>Asistencia a eventos</h3><p class="sub">Cuántas personas han ido a 0, 1, 2… eventos.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="topartistas"><h3>Artistas más apoyados</h3><p class="sub">Quiénes recibieron más comisiones.</p><div class="grafica"></div></article>
+        <article class="tarjeta"><h3>En números</h3>
+          <dl class="datos">
+            <div><dt>Artistas en la comunidad</dt><dd id="dato-artistas"></dd><small id="dato-artistas-pct"></small></div>
+            <div><dt>Comisiones compradas</dt><dd id="dato-comisiones"></dd></div>
+            <div><dt>Eventos por persona (promedio)</dt><dd id="dato-eventos"></dd></div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="v-bienestar" hidden>
+      <div class="rejilla-vista">
+        <article class="tarjeta c2" data-grafica="sentimiento"><h3>¿Cómo se siente la comunidad?</h3><p class="sub">Arriba de 0 es buen ambiente. Si baja de −0.2 aparece una alerta.</p><div class="grafica"></div>
+          <p class="pie-grafica"><i class="punto-alerta"></i> Momentos con alerta de mal ambiente</p></article>
+        <article class="tarjeta"><h3>Personas que podrían alejarse</h3><p class="sub">El riesgo va de 0 a 100. Conviene escribirles a tiempo.</p>
+          <table class="tabla-datos riesgo" id="tabla-riesgo"><thead><tr><th scope="col">Usuario</th><th scope="col">Riesgo</th><th scope="col">Última vez</th></tr></thead><tbody></tbody></table>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="v-vivo" hidden>
+      <article class="tarjeta">
+        <h3>Lo que está pasando ahora <span class="estado"><i></i>Sin conexión (ejemplo)</span></h3><p class="sub">Cada vez que alguien participa aparece aquí al instante.</p>
+        <ul class="vivo-lista" id="vivo"></ul>
+      </article>
     </section>
   </main>
+
+  <script src="datos-ejemplo.js"></script>
+  <script src="graficas.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>
