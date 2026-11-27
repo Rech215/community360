@@ -1,0 +1,4 @@
+Tipografías incluidas en el proyecto (licencia SIL Open Font License 1.1):
+- Inter (Rasmus Andersson), cortes 400, 500, 600 y 700, recortada a caracteres latinos.
+- Fraunces (Undercase Type), corte 600.
+Se sirven desde el propio dominio para cumplir la política de seguridad (CSP) sin depender de servicios externos.

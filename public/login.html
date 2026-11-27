@@ -7,26 +7,44 @@
   <link rel="stylesheet" href="/static/css/estilos.css">
 </head>
 <body class="pagina-login">
-  <main class="tarjeta">
-    <h1>Community<b>360</b></h1>
-    <p class="sub">Panel de analítica de la comunidad</p>
+  <div class="orbes" aria-hidden="true"><div class="orbe o1"></div><div class="orbe o2"></div></div>
+  <div class="escena">
+    <main class="tarjeta">
+      <h1>Community<b>360</b></h1>
+      <p class="sub">Panel de analítica de la comunidad</p>
 
-    <form id="formulario" novalidate>
-      <label for="usuario">Usuario o correo</label>
-      <input id="usuario" name="usuario" type="text" autocomplete="username" required autofocus>
+      <form id="formulario" novalidate>
+        <label for="usuario">Usuario o correo</label>
+        <input id="usuario" name="usuario" type="text" autocomplete="username" required autofocus>
 
-      <label for="password">Contraseña</label>
-      <div class="campo-clave">
-        <input id="password" name="password" type="password" autocomplete="current-password" required>
-        <button type="button" id="ver" class="ver" aria-label="Mostrar u ocultar la contraseña">Ver</button>
+        <label for="password">Contraseña</label>
+        <div class="campo-clave">
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <button type="button" id="ver" class="ver" aria-label="Mostrar u ocultar la contraseña">Ver</button>
+        </div>
+
+        <p id="mensaje" class="mensaje" role="alert" aria-live="polite"></p>
+        <button id="entrar" type="submit">Entrar</button>
+      </form>
+
+      <p class="pie">Acceso solo para usuarios autorizados</p>
+    </main>
+    <section class="presenta">
+      <p class="etiqueta-login"><span class="pulso"></span> Panel en tiempo real</p>
+      <h2>Tu comunidad,<br><em>siempre a la vista.</em></h2>
+      <p class="lead">Mira quién participa, cómo se siente la gente y a quién conviene escribirle, sin esperar al reporte del mes.</p>
+      <div class="vp-vivo" aria-hidden="true">
+        <div class="vp-cab"><span class="vp-punto"></span> Lo que pasa ahora</div>
+        <div class="vp-fila v"><i></i><span>Nueva · Comentario</span><b>+0.60</b></div>
+        <div class="vp-fila n"><i></i><span>Modificada · Mensaje</span><b>−0.20</b></div>
+        <div class="vp-fila r"><i></i><span>Eliminada · Reacción</span><b>−0.50</b></div>
       </div>
+      <ul class="chips">
+        <li>Tiempo real</li><li>Historial en la nube</li><li>Ubicación protegida</li>
+      </ul>
+    </section>
 
-      <p id="mensaje" class="mensaje" role="alert" aria-live="polite"></p>
-      <button id="entrar" type="submit">Entrar</button>
-    </form>
-
-    <p class="pie">Acceso solo para usuarios autorizados</p>
-  </main>
+  </div>
   <script src="/static/js/login.js"></script>
 </body>
 </html>

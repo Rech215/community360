@@ -14,10 +14,11 @@
       <button type="button" role="tab" data-vista="actividad" aria-selected="true">Actividad</button>
       <button type="button" role="tab" data-vista="comunidad" aria-selected="false">Comunidad</button>
       <button type="button" role="tab" data-vista="bienestar" aria-selected="false">Ánimo y riesgo</button>
+      <button type="button" role="tab" data-vista="historial" aria-selected="false">Historial</button>
       <button type="button" role="tab" data-vista="vivo" aria-selected="false">En vivo</button>
     </nav>
     <div class="cuenta">
-      <span class="chip-ejemplo">Datos de ejemplo</span>
+      <span class="chip-datos" id="estado-datos">Cargando datos…</span>
       <span class="quien"><strong id="quien">...</strong><small id="rol"></small></span>
       <button id="salir" type="button">Salir</button>
     </div>
@@ -35,10 +36,10 @@
   <main class="contenido">
     <section class="panel" id="v-actividad">
       <div class="rejilla-vista">
-        <article class="tarjeta c2" data-grafica="tendencia"><h3>Actividad de cada día</h3><p class="sub">Mensajes, comentarios y reacciones de los últimos 30 días.</p><div class="grafica"></div></article>
-        <article class="tarjeta" data-grafica="tipos"><h3>¿Cómo participa la gente?</h3><p class="sub">Qué tipo de actividad es la más común.</p><div class="grafica"></div></article>
-        <article class="tarjeta c2" data-grafica="calor"><h3>¿Cuándo hay más movimiento?</h3><p class="sub">Más oscuro = más actividad. Sirve para elegir cuándo publicar o hacer eventos.</p><div class="grafica"></div></article>
-        <article class="tarjeta" data-grafica="plataformas"><h3>¿Dónde se juntan?</h3><p class="sub">Plataformas con más actividad.</p><div class="grafica"></div></article>
+        <article class="tarjeta c2" data-grafica="tendencia"><h3>Actividad de cada día</h3><p class="sub">Interacciones registradas en los últimos 30 días con actividad.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="tipos"><h3>¿Cómo participa la gente?</h3><p class="sub">Qué tipo de actividad es la más común (todo el historial).</p><div class="grafica"></div></article>
+        <article class="tarjeta c2" data-grafica="calor"><h3>¿Cuándo hay más movimiento?</h3><p class="sub">Más oscuro = más actividad en todo el historial. Sirve para elegir cuándo publicar o hacer eventos.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="plataformas"><h3>¿Dónde se juntan?</h3><p class="sub">Plataformas con más actividad (todo el historial).</p><div class="grafica"></div></article>
       </div>
     </section>
 
@@ -48,7 +49,7 @@
         <article class="tarjeta" data-grafica="intereses"><h3>Intereses</h3><p class="sub">Lo que más les gusta a los miembros.</p><div class="grafica"></div></article>
         <article class="tarjeta" data-grafica="edades"><h3>Edades</h3><p class="sub">Qué porcentaje hay en cada rango.</p><div class="grafica"></div></article>
         <article class="tarjeta" data-grafica="eventos"><h3>Asistencia a eventos</h3><p class="sub">Cuántas personas han ido a 0, 1, 2… eventos.</p><div class="grafica"></div></article>
-        <article class="tarjeta" data-grafica="topartistas"><h3>Artistas más apoyados</h3><p class="sub">Quiénes recibieron más comisiones.</p><div class="grafica"></div></article>
+        <article class="tarjeta" data-grafica="topartistas"><h3>Quienes más apoyan a artistas</h3><p class="sub">Miembros con más comisiones compradas.</p><div class="grafica"></div></article>
         <article class="tarjeta"><h3>En números</h3>
           <dl class="datos">
             <div><dt>Artistas en la comunidad</dt><dd id="dato-artistas"></dd><small id="dato-artistas-pct"></small></div>
@@ -60,18 +61,55 @@
     </section>
 
     <section class="panel" id="v-bienestar" hidden>
+      <p class="intro"><strong>Ánimo</strong> avisa cuando la comunidad se enfría. <strong>Riesgo</strong> señala a quién conviene escribirle antes de que deje de participar.</p>
+      <div class="resumen3">
+        <div><span>Ánimo actual</span><strong id="b-actual"></strong><small id="b-actual-txt"></small></div>
+        <div><span>Punto más bajo del periodo</span><strong id="b-minimo"></strong><small id="b-minimo-txt"></small></div>
+        <div><span>Días en alerta</span><strong id="b-alertas"></strong><small>Ánimo por debajo de −0.2</small></div>
+      </div>
       <div class="rejilla-vista">
-        <article class="tarjeta c2" data-grafica="sentimiento"><h3>¿Cómo se siente la comunidad?</h3><p class="sub">Arriba de 0 es buen ambiente. Si baja de −0.2 aparece una alerta.</p><div class="grafica"></div>
-          <p class="pie-grafica"><i class="punto-alerta"></i> Momentos con alerta de mal ambiente</p></article>
+        <article class="tarjeta c2" data-grafica="sentimiento"><h3>¿Cómo se siente la comunidad?</h3><p class="sub">Promedio de los últimos días. Las zonas de color marcan buen ambiente, normal y alerta.</p><div class="grafica"></div>
+          <ul class="zonas-leyenda"><li><i class="z-bien"></i>Buen ambiente (arriba de 0)</li><li><i class="z-alerta"></i>Alerta (abajo de −0.2)</li></ul></article>
         <article class="tarjeta"><h3>Personas que podrían alejarse</h3><p class="sub">El riesgo va de 0 a 100. Conviene escribirles a tiempo.</p>
           <table class="tabla-datos riesgo" id="tabla-riesgo"><thead><tr><th scope="col">Usuario</th><th scope="col">Riesgo</th><th scope="col">Última vez</th></tr></thead><tbody></tbody></table>
         </article>
       </div>
     </section>
 
+    <section class="panel" id="v-historial" hidden>
+      <article class="tarjeta">
+        <h3>Historial de interacciones</h3>
+        <p class="sub">Todo lo registrado en la base de datos, de lo más reciente a lo más antiguo.</p>
+        <form class="filtros" id="filtros" autocomplete="off">
+          <label>Tipo<select id="f-tipo"><option value="">Todos</option></select></label>
+          <label>Plataforma<select id="f-plataforma"><option value="">Todas</option></select></label>
+          <label>Desde<input type="date" id="f-desde"></label>
+          <label>Hasta<input type="date" id="f-hasta"></label>
+          <button type="reset" id="f-limpiar">Limpiar</button>
+        </form>
+        <div class="tabla-caja">
+          <table class="tabla-datos historial" id="tabla-historial">
+            <thead><tr><th scope="col">Fecha</th><th scope="col">Usuario</th><th scope="col">Tipo</th><th scope="col">Tema</th><th scope="col">Ánimo</th><th scope="col">Texto</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="vacio" id="hist-vacio" hidden>No hay interacciones con esos filtros.</p>
+        <div class="paginador">
+          <span id="hist-rango"></span>
+          <div><button type="button" id="hist-ant">← Anterior</button><button type="button" id="hist-sig">Siguiente →</button></div>
+        </div>
+      </article>
+    </section>
+
     <section class="panel" id="v-vivo" hidden>
       <article class="tarjeta">
         <h3>Lo que está pasando ahora <span class="estado" id="estado-ws"><i></i><span>Conectando…</span></span></h3><p class="sub">Cada interacción nueva, modificada o eliminada aparece aquí al instante.</p>
+        <p class="contadores" aria-label="Movimientos desde que abriste el panel">
+          <span class="cont creada"><i></i><b id="c-creada">0</b> nuevas</span>
+          <span class="cont modificada"><i></i><b id="c-modificada">0</b> modificadas</span>
+          <span class="cont eliminada"><i></i><b id="c-eliminada">0</b> eliminadas</span>
+          <small>desde que abriste el panel</small>
+        </p>
         <p class="vacio" id="vivo-vacio">Esperando movimientos…</p>
         <ul class="vivo-lista" id="vivo"></ul>
       </article>
@@ -79,7 +117,6 @@
   </main>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="datos-ejemplo.js"></script>
   <script src="graficas.js"></script>
   <script src="dashboard.js"></script>
 </body>

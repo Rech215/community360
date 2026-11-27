@@ -62,6 +62,9 @@
     const cada = Math.ceil(n / 6);
     for (let i = 0; i < n; i += cada) svg.appendChild(s('text', { x: x(i), y: H - 8, class: 'eje', 'text-anchor': 'middle' }, o.etiquetas[i]));
 
+    (o.zonas || []).forEach(z => {
+      svg.appendChild(s('rect', { x: m.l, y: y(z.hasta), width: W - m.l - m.r, height: Math.max(0, y(z.desde) - y(z.hasta)), fill: z.color, opacity: z.opacidad, rx: 3 }));
+    });
     if (o.umbral !== undefined) {
       svg.appendChild(s('line', { x1: m.l, x2: W - m.r, y1: y(o.umbral), y2: y(o.umbral), class: 'umbral' }));
       svg.appendChild(s('text', { x: W - m.r, y: y(o.umbral) - 6, class: 'eje umbral-txt', 'text-anchor': 'end' }, o.etiquetaUmbral));
@@ -96,17 +99,20 @@
   }
 
   // ---- Barras horizontales (una serie = un solo color) ----
-  function barras(cont, items) {
+  function barras(cont, items, unidad = 'participaciones') {
     const max = Math.max(...items.map(i => i.valor));
+    const suma = items.reduce((a, i) => a + i.valor, 0);
     const lista = el('div', { class: 'barras' });
-    items.forEach(it => {
-      const fila = el('div', { class: 'barra-fila', tabindex: '0' });
+    items.forEach((it, k) => {
+      const fila = el('div', { class: 'barra-fila' + (k === 0 ? ' primera' : ''), tabindex: '0' });
       fila.appendChild(el('span', { class: 'barra-nombre' }, it.nombre));
       const pista = el('div', { class: 'barra-pista' });
-      pista.appendChild(el('div', { class: 'barra', style: `width:${(it.valor / max) * 84}%` }));
-      pista.appendChild(el('span', { class: 'barra-valor' }, fmtN(it.valor)));
+      pista.appendChild(el('div', { class: 'barra', style: `width:${Math.max(3, (it.valor / max) * 100)}%` }));
       fila.appendChild(pista);
-      const mostrar = e => { const r = (e.target.closest('.barra-fila')).getBoundingClientRect(); verTip(e.clientX || r.left + 80, e.clientY || r.top, it.nombre, [{ color: COL[0], valor: fmtN(it.valor), nombre: 'participaciones' }]); };
+      const num = el('span', { class: 'barra-valor' }, fmtN(it.valor));
+      num.appendChild(el('small', {}, `${(it.valor / suma * 100).toFixed(0)} %`));
+      fila.appendChild(num);
+      const mostrar = e => { const r = fila.getBoundingClientRect(); verTip(e.clientX || r.left + 80, e.clientY || r.top, it.nombre, [{ color: COL[0], valor: fmtN(it.valor), nombre: `${unidad} · ${(it.valor / suma * 100).toFixed(1)} %` }]); };
       fila.addEventListener('pointermove', mostrar); fila.addEventListener('focus', mostrar);
       fila.addEventListener('pointerleave', ocultarTip); fila.addEventListener('blur', ocultarTip);
       lista.appendChild(fila);
@@ -147,19 +153,27 @@
   }
 
   // ---- Mapa de calor día × franja horaria (una sola tinta, de claro a oscuro) ----
+  const DIA_LARGO = { Lun: 'lunes', Mar: 'martes', 'Mié': 'miércoles', Jue: 'jueves', Vie: 'viernes', 'Sáb': 'sábado', Dom: 'domingo' };
   function calor(cont, d) {
-    const max = Math.max(...d.calor.flat());
+    const max = Math.max(...d.calor.flat(), 1);
+    let pico = { v: -1, r: 0, c: 0 };
+    d.calor.forEach((fila, r) => fila.forEach((v, c) => { if (v > pico.v) pico = { v, r, c }; }));
     const mezcla = t => {
-      const a = [227, 243, 241], b = [11, 85, 78];
-      return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * t)).join(',')})`;
+      const a = [231, 244, 242], b = [8, 78, 72];
+      return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * Math.pow(t, 0.85))).join(',')})`;
     };
+    const resumen = el('p', { class: 'calor-resumen' });
+    resumen.appendChild(document.createTextNode('Momento más activo: '));
+    resumen.appendChild(el('strong', {}, `${DIA_LARGO[d.dias[pico.r]] || d.dias[pico.r]}, de ${d.bloques[pico.c].replace('–', ' a ')} h`));
+    resumen.appendChild(el('span', {}, ` · ${fmtN(pico.v)} participaciones`));
     const malla = el('div', { class: 'calor' });
     malla.appendChild(el('span'));
     d.bloques.forEach((b, i) => malla.appendChild(el('span', { class: 'calor-col' }, i % 2 === 0 ? b.split('–')[0] + ' h' : '')));
     d.dias.forEach((dia, r) => {
       malla.appendChild(el('span', { class: 'calor-fila' }, dia));
       d.calor[r].forEach((v, c) => {
-        const celda = el('span', { class: 'celda', style: `background:${mezcla(v / max)}`, tabindex: '0' });
+        const esPico = r === pico.r && c === pico.c;
+        const celda = el('span', { class: 'celda' + (esPico ? ' pico' : ''), style: `background:${mezcla(v / max)}`, tabindex: '0' });
         const mostrar = e => { const b = celda.getBoundingClientRect(); verTip(e.clientX || b.left, e.clientY || b.top, `${dia}, ${d.bloques[c]} h`, [{ valor: fmtN(v), nombre: 'participaciones' }]); };
         celda.addEventListener('pointermove', mostrar); celda.addEventListener('focus', mostrar);
         celda.addEventListener('pointerleave', ocultarTip); celda.addEventListener('blur', ocultarTip);
@@ -170,7 +184,7 @@
     escala.appendChild(el('span', {}, 'Menos'));
     const barra = el('i'); barra.style.background = `linear-gradient(90deg, ${mezcla(0)}, ${mezcla(1)})`;
     escala.appendChild(barra); escala.appendChild(el('span', {}, 'Más'));
-    cont.replaceChildren(malla, escala);
+    cont.replaceChildren(resumen, malla, escala);
   }
 
   // ---- Minigráfica para las tarjetas de indicadores ----
@@ -199,18 +213,21 @@
     const y = v => m.t + (1 - v / tope) * (H - m.t - m.b);
     const banda = (W - m.l - m.r) / items.length;
     const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'svg-grafica', role: 'img', 'aria-label': nombre });
+    const defs = s('defs'); const gr = s('linearGradient', { id: 'grad-col', x1: 0, y1: 0, x2: 0, y2: 1 });
+    gr.appendChild(s('stop', { offset: '0%', 'stop-color': '#12a79b' })); gr.appendChild(s('stop', { offset: '100%', 'stop-color': '#0a6f67' }));
+    defs.appendChild(gr); svg.appendChild(defs);
     for (let k = 0; k <= 4; k++) {
       const v = (tope / 4) * k;
       svg.appendChild(s('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: 'rejilla' }));
       svg.appendChild(s('text', { x: m.l - 8, y: y(v) + 4, class: 'eje', 'text-anchor': 'end' }, fmtN(v)));
     }
     items.forEach((it, i) => {
-      const ancho = Math.min(24, banda - 14);
+      const ancho = Math.min(30, banda - 12);
       const x0 = m.l + banda * i + (banda - ancho) / 2;
       const alto = y(0) - y(it.valor);
-      const r = Math.min(4, alto);
+      const r = Math.min(7, alto);
       const d = `M${x0},${y(0)} V${y(it.valor) + r} Q${x0},${y(it.valor)} ${x0 + r},${y(it.valor)} H${x0 + ancho - r} Q${x0 + ancho},${y(it.valor)} ${x0 + ancho},${y(it.valor) + r} V${y(0)} Z`;
-      const col = s('path', { d, fill: COL[0], class: 'columna', tabindex: '0' });
+      const col = s('path', { d, fill: 'url(#grad-col)', class: 'columna', tabindex: '0' });
       const mostrar = e => { const b = col.getBoundingClientRect(); verTip(e.clientX || b.left + b.width / 2, e.clientY || b.top, it.nombre, [{ color: COL[0], valor: fmtN(it.valor), nombre }]); };
       col.addEventListener('pointermove', mostrar); col.addEventListener('focus', mostrar);
       col.addEventListener('pointerleave', ocultarTip); col.addEventListener('blur', ocultarTip);
@@ -223,25 +240,34 @@
 
   // ---- Barra segmentada: un todo dividido en partes ordenadas (una sola tinta) ----
   function segmentada(cont, items) {
-    const total = items.reduce((a, i) => a + i.valor, 0);
+    const total = items.reduce((a, i) => a + i.valor, 0) || 1;
     const tonos = ['#6fbcb3', '#2e978d', '#0f7a70', '#0b554e'];
     const textos = ['#1c2b2a', '#ffffff', '#ffffff', '#ffffff'];
+    const mayor = items.reduce((m, i, k) => (i.valor > items[m].valor ? k : m), 0);
+    const pctDe = it => it.valor / total * 100;
+    const hero = el('p', { class: 'edad-hero' });
+    hero.appendChild(document.createTextNode('El grupo más grande es '));
+    hero.appendChild(el('strong', {}, items[mayor].nombre));
+    hero.appendChild(document.createTextNode(` (${pctDe(items[mayor]).toFixed(0)} % de la comunidad)`));
     const barra = el('div', { class: 'segmentada', role: 'img', 'aria-label': 'Distribución por rango de edad' });
     items.forEach((it, k) => {
-      const pct = it.valor / total * 100;
+      const pct = pctDe(it);
       const seg = el('div', { class: 'seg', style: `width:${pct}%;background:${tonos[k]};color:${textos[k]}`, tabindex: '0' });
-      if (pct >= 12) seg.textContent = pct.toFixed(0) + ' %';
-      const mostrar = e => { const b = seg.getBoundingClientRect(); verTip(e.clientX || b.left, e.clientY || b.top, it.nombre, [{ valor: fmtN(it.valor), nombre: `${pct.toFixed(1)} % de los usuarios` }]); };
+      const mostrar = e => { const bb = seg.getBoundingClientRect(); verTip(e.clientX || bb.left, e.clientY || bb.top, it.nombre, [{ valor: fmtN(it.valor), nombre: `${pct.toFixed(1)} % de los usuarios` }]); };
       seg.addEventListener('pointermove', mostrar); seg.addEventListener('focus', mostrar);
       seg.addEventListener('pointerleave', ocultarTip); seg.addEventListener('blur', ocultarTip);
       barra.appendChild(seg);
     });
-    const ley = el('ul', { class: 'leyenda fila' });
+    const rejilla = el('ul', { class: 'edad-grupos' });
     items.forEach((it, k) => {
-      const li = el('li'); li.appendChild(el('i', { style: `background:${tonos[k]}` })); li.appendChild(el('span', {}, it.nombre));
-      ley.appendChild(li);
+      const t = el('li', { class: 'edad-grupo' + (k === mayor ? ' mayor' : '') });
+      const nom = el('span', { class: 'edad-nombre' }); nom.appendChild(el('i', { style: `background:${tonos[k]}` })); nom.appendChild(document.createTextNode(it.nombre));
+      t.appendChild(nom);
+      t.appendChild(el('small', {}, fmtN(it.valor) + ' personas'));
+      t.appendChild(el('strong', {}, pctDe(it).toFixed(0) + ' %'));
+      rejilla.appendChild(t);
     });
-    cont.replaceChildren(barra, ley);
+    cont.replaceChildren(barra, rejilla);
   }
 
   window.Graficas = { linea, barras, dona, calor, mini, tabla, columnas, segmentada, fmtN, COL, el };

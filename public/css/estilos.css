@@ -1,3 +1,8 @@
+@font-face { font-family: "Inter"; font-weight: 400; font-display: swap; src: url("../fuentes/inter-400.woff") format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-display: swap; src: url("../fuentes/inter-500.woff") format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-display: swap; src: url("../fuentes/inter-600.woff") format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 700; font-display: swap; src: url("../fuentes/inter-700.woff") format("woff"); }
+@font-face { font-family: "Fraunces"; font-weight: 600; font-display: swap; src: url("../fuentes/fraunces-600.woff2") format("woff2"); }
 :root {
   --papel: #f5f1ea; --tarjeta: #fffdf9; --tinta: #1c2b2a; --suave: #5e6b68;
   --borde: #d9d0c1; --acento: #0f6b66; --acento-oscuro: #0b524e; --error: #a63a1f;
@@ -5,8 +10,12 @@
 * { box-sizing: border-box; }
 body {
   margin: 0; min-height: 100vh;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: var(--tinta); background: var(--papel);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--tinta);
+  background: url("../img/fondo.svg") center / cover no-repeat fixed,
+    radial-gradient(900px 520px at 78% -10%, #1e8a82 0%, rgba(30,138,130,0) 62%),
+    linear-gradient(160deg, #0b3532 0%, #0e4a46 55%, #0a2f2c 100%);
+  background-color: #0c3b38;
 }
 .pagina-login { display: flex; align-items: center; justify-content: center; padding: 1.5rem; position: relative; }
 
@@ -14,10 +23,10 @@ body {
 
 .tarjeta {
   position: relative; width: 100%; max-width: 380px; background: var(--tarjeta);
-  border: 1px solid var(--borde); border-radius: 14px; padding: 2.25rem 2rem 1.75rem;
-  box-shadow: 0 8px 30px rgba(28, 43, 42, .07); text-align: center;
+  border: 1px solid rgba(255,255,255,.5); border-radius: 18px; padding: 2.4rem 2.1rem 1.8rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35), 0 2px 6px rgba(0,0,0,.2); text-align: center;
 }
-.tarjeta h1 { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-weight: 400; font-size: 1.55rem; letter-spacing: .08em; margin: .6rem 0 .25rem; }
+.tarjeta h1 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 1.55rem; margin: .6rem 0 .25rem; }
 .sub { margin: 0 0 1.5rem; color: var(--suave); font-size: .92rem; }
 form { text-align: left; }
 label { display: block; margin: 1rem 0 .35rem; font-size: .85rem; font-weight: 600; }
@@ -44,5 +53,60 @@ input:focus { outline: 2px solid var(--acento); outline-offset: 1px; border-colo
 .pie { color: var(--suave); font-size: .78rem; margin: 1.4rem 0 0; }
 
 
-.tarjeta h1 { letter-spacing: 0; font-size: 1.9rem; margin: 0 0 .3rem; }
-.tarjeta h1 b { color: var(--acento); font-weight: 700; margin-left: .3rem; }
+.tarjeta h1 { letter-spacing: -.01em; font-size: 2rem; margin: 0 0 .3rem; }
+.tarjeta h1 b { color: var(--acento); font-weight: 600; margin-left: .3rem; }
+
+/* ===== v9: login a dos columnas ===== */
+.pagina-login { overflow-x: hidden; }
+.escena { position: relative; z-index: 1; width: 100%; max-width: 1060px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 4.5rem; align-items: center; }
+.tarjeta { max-width: 400px; justify-self: end; width: 100%; background: rgba(255,253,249,.97); box-shadow: 0 30px 80px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.35), 0 0 70px rgba(127,227,216,.18); }
+.tarjeta::before { content: ""; position: absolute; left: 2.1rem; right: 2.1rem; top: 0; height: 4px; border-radius: 0 0 4px 4px; background: linear-gradient(90deg, #7fe3d8, #0f6b66); }
+.presenta { color: #e8f4f1; }
+.marca-login { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 1.35rem; margin: 0 0 2.2rem; color: #f6f1e7; }
+.marca-login b { color: #7fe3d8; font-weight: 600; margin-left: .3rem; }
+.presenta h2 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: clamp(2.1rem, 3.6vw, 3rem); line-height: 1.1; letter-spacing: -.02em; margin: 0 0 1rem; color: #fff; }
+.presenta h2 em { font-style: normal; background: linear-gradient(90deg, #7fe3d8, #c6f5ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { margin: 0 0 2rem; font-size: 1.05rem; line-height: 1.5; color: #b7d6d1; max-width: 34ch; }
+.puntos { list-style: none; margin: 0 0 2rem; padding: 0; display: grid; gap: 1rem; }
+.puntos li { display: flex; gap: .9rem; align-items: center; }
+.puntos .ico { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: #7fe3d8; background: rgba(127,227,216,.1); border: 1px solid rgba(127,227,216,.25); }
+.puntos strong { display: block; font-size: .95rem; font-weight: 600; color: #fff; }
+.puntos small { display: block; font-size: .84rem; color: #9fc3be; margin-top: .1rem; }
+.vista-previa { max-width: 340px; padding: .9rem 1rem .5rem; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(3px); }
+.vp-cab { font-size: .78rem; font-weight: 600; color: #cfe9e5; display: flex; align-items: center; gap: .45rem; margin-bottom: .2rem; }
+.vp-punto { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 4px rgba(74,222,128,.2); animation: pulso 2s ease-in-out infinite; }
+.vp-linea { width: 100%; height: auto; display: block; }
+@keyframes pulso { 50% { box-shadow: 0 0 0 8px rgba(74,222,128,0); } }
+.orbe { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; }
+.o1 { width: 420px; height: 420px; background: rgba(46,190,175,.28); left: -120px; top: -140px; }
+.o2 { width: 360px; height: 360px; background: rgba(196,87,47,.16); right: -100px; bottom: -120px; }
+@media (max-width: 900px) { .escena { grid-template-columns: 1fr; } .presenta { display: none; } .tarjeta { justify-self: center; } }
+@media (prefers-reduced-motion: reduce) { .vp-punto { animation: none; } }
+
+/* ===== v10: variante del login (tarjeta a la izquierda, vista de movimientos en vivo) ===== */
+.escena { grid-template-columns: .9fr 1.1fr; gap: 5rem; }
+.tarjeta { justify-self: start; }
+.presenta h2 { font-size: clamp(2.2rem, 3.8vw, 3.2rem); }
+.presenta h2 em { background: linear-gradient(90deg, #ffb48f, #ff8a5c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.etiqueta-login { display: inline-flex; align-items: center; gap: .55rem; margin: 0 0 1.2rem; padding: .35rem .9rem; border-radius: 999px; font-size: .8rem; font-weight: 600; color: #cfe9e5; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); }
+.pulso { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 4px rgba(74,222,128,.22); animation: pulso 2s ease-in-out infinite; }
+.lead { max-width: 40ch; margin-bottom: 1.8rem; }
+.vp-vivo { max-width: 400px; padding: 1rem; border-radius: 18px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(4px); box-shadow: 0 20px 50px rgba(0,0,0,.25); transform: rotate(-1.5deg); margin-bottom: 1.8rem; }
+.vp-vivo .vp-cab { margin-bottom: .7rem; }
+.vp-fila { display: flex; align-items: center; gap: .7rem; padding: .6rem .8rem; border-radius: 10px; margin-top: .45rem; font-size: .84rem; font-weight: 500; color: #12302d; border-left: 4px solid; }
+.vp-fila i { display: none; }
+.vp-fila span { flex: 1; } .vp-fila b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.vp-fila.v { background: #e8f4ec; border-color: #2e9e5b; } .vp-fila.n { background: #fdeedd; border-color: #e8821e; } .vp-fila.r { background: #fbe7e4; border-color: #d0463a; }
+.chips { list-style: none; display: flex; flex-wrap: wrap; gap: .6rem; margin: 0; padding: 0; }
+.chips li { padding: .4rem .9rem; border-radius: 999px; font-size: .82rem; color: #cfe9e5; border: 1px solid rgba(127,227,216,.3); background: rgba(127,227,216,.07); }
+@media (max-width: 900px) { .escena { grid-template-columns: 1fr; } .tarjeta { justify-self: center; } }
+
+/* v11: tarjeta de acceso a la derecha */
+.escena { grid-template-columns: 1.1fr .9fr; gap: 4.5rem; }
+.escena .tarjeta { order: 2; justify-self: end; }
+.escena .presenta { order: 1; }
+@media (max-width: 900px) { .escena { grid-template-columns: 1fr; } .escena .tarjeta { justify-self: center; } }
+
+/* v12: las luces de fondo no deben alargar la página (pantalla fija) */
+.orbes { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.pagina-login { overflow-x: clip; }

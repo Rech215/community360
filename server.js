@@ -44,6 +44,7 @@ app.use('/api', rateLimit({            // tope general por IP para toda la API
 }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api', require('./routes/interacciones'));   // Fase 4 (exige sesión en todas sus rutas)
+app.use('/api', require('./routes/metricas'));
 app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 
 // ---- Páginas ----
